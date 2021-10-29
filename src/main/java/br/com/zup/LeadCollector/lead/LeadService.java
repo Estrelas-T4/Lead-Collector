@@ -9,4 +9,9 @@ import java.util.List;
 @Service
 public class LeadService {
     private List<LeadDTO> mailing = new ArrayList<>();
+
+    public void salvarLead(LeadDTO leadDTO){
+        mailing.add(leadDTO);
+    }
+
 }
