@@ -14,4 +14,8 @@ public class LeadService {
         mailing.add(leadDTO);
     }
 
+    public List<LeadDTO> retornarTodosOsLead(){
+        return mailing;
+    }
+
 }
