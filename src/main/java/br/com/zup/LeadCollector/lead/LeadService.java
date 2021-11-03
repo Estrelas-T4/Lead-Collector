@@ -19,9 +19,6 @@ public class LeadService {
             LeadDTO leadDaLista = buscarLead(leadDTO.getEmail());
             atualizarListaDeProdutos(leadDTO.getProdutos(), leadDaLista);
 
-        }catch (LeadEProdutoJaCadastroException exception){
-            throw new RuntimeException(exception.getMessage());
-
         }catch (LeadNaoEncontradoException exception){
             mailing.add(leadDTO);
         }
