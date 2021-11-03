@@ -1,6 +1,8 @@
 package br.com.zup.LeadCollector.lead;
 
 import br.com.zup.LeadCollector.lead.dtos.LeadDTO;
+import br.com.zup.LeadCollector.lead.exceptions.LeadEProdutoJaCadastroException;
+import br.com.zup.LeadCollector.lead.exceptions.LeadNaoEncontradoException;
 import br.com.zup.LeadCollector.produto.dtos.ProdutoDTO;
 import org.springframework.stereotype.Service;
 
@@ -14,22 +16,26 @@ public class LeadService {
     public void salvarLead(LeadDTO leadDTO){
         try{
             verificarLeadEProduto(leadDTO);
+            LeadDTO leadDaLista = buscarLead(leadDTO.getEmail());
+            atualizarListaDeProdutos(leadDTO.getProdutos(), leadDaLista);
+
+        }catch (LeadEProdutoJaCadastroException exception){
+            throw new RuntimeException(exception.getMessage());
+
+        }catch (LeadNaoEncontradoException exception){
+            mailing.add(leadDTO);
         }
-        mailing.add(leadDTO);
+
     }
 
     public void verificarLeadEProduto(LeadDTO objetoChegandoAgora){
-        try{
             LeadDTO objetoDaLista = buscarLead(objetoChegandoAgora.getEmail());
 
             for (ProdutoDTO produtoDTO : objetoChegandoAgora.getProdutos()){
                 if (produtoEstaPresente(objetoDaLista.getProdutos(), produtoDTO.getNomeProduto())){
-                    throw new RuntimeException("Produto e Lead já cadastro");
+                    throw new LeadEProdutoJaCadastroException("Lead e Produto já cadastrado");
                 }
             }
-        }catch (RuntimeException exception){
-            throw new RuntimeException(exception.getMessage());
-        }
 
     }
 
@@ -39,7 +45,7 @@ public class LeadService {
                 return leadDTO;
             }
         }
-        throw new RuntimeException("Lead não encontrado");
+        throw new LeadNaoEncontradoException("Lead não encontrado");
     }
 
     public boolean produtoEstaPresente(List<ProdutoDTO> listaDeInteresse, String nomeProduto){
@@ -49,6 +55,12 @@ public class LeadService {
             }
         }
         return false;
+    }
+
+    public void atualizarListaDeProdutos(List<ProdutoDTO> novosProdutos, LeadDTO leadParaAtualizar){
+        for (ProdutoDTO produtoDTO : novosProdutos){
+            leadParaAtualizar.getProdutos().add(produtoDTO);
+        }
     }
 
     public List<LeadDTO> retornarTodosOsLead(){
