@@ -9,6 +9,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/leads")
+//Proxy Pattern
 public class LeadController {
     @Autowired
     private LeadService leadService;
